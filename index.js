@@ -29,6 +29,19 @@ client.on('message', async(message) => {
 
             case 'add':
                 add();
+                break;
+
+            case 'setNsfw':
+                setNsfw();
+                break;
+
+            case 'setSfw':
+                setSfw();
+                break;
+
+            case 'pin':
+                if (!message.guild.me.hasPermission("MANAGE_MESSAGES")) return message.channel.send("I don't have the permission to manage messages")
+                pinMsg();
         }
 
         function purge() {
@@ -57,6 +70,25 @@ client.on('message', async(message) => {
                 message.channel.bulkDelete(messagesToDelete).catch(err => message.channel.send(`Error: ${err}`));
             }
         }
+
+        function setNsfw() {
+            if (message.channel.nsfw) return message.channel.send('Channel already set to NSFW')
+            message.channel.edit({ nsfw: true })
+            message.channel.send('Channel set to NSFW')
+        }
+
+        function setSfw() {
+            if (!message.channel.nsfw) return message.channel.send('Channel already set to SFW')
+            message.channel.edit({ nsfw: false })
+            message.channel.send('Channel set to SFW')
+        }
+
+        function pinMsg() {
+            const str = args.join(' ');
+            message.delete()
+            message.channel.send(str).then(msg => msg.pin())
+        }
+
 
         function add() {
             if (!args[0]) return message.reply('Give me something to add bruh :/')
