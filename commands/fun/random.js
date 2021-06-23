@@ -1,7 +1,11 @@
 module.exports = {
-    name: 'random',
-    description: "Generates a random number from 0 to the specified number. Usage: -random 50",
-    execute(message, args) {
+    commands: ['random', 'ran'],
+    expectedArgs: '<num>',
+    minArgs: 1,
+    maxArgs: 1,
+    callback: (message, args, text) => {
         message.channel.send(Math.floor(Math.random() * (parseInt(args[0]) + 1)))
-    }
+    },
+    permissions: [],
+    requiredRoles: [],
 }

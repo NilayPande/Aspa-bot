@@ -1,11 +1,15 @@
 module.exports = {
-    name: 'pin',
-    description: "Pin a message. Usage: -pin message_to_be_pinned",
-    execute(message, args) {
-        if (!message.guild.me.hasPermission("MANAGE_MESSAGES")) return message.channel.send("I don't have the permission to manage messages")
+    commands: ['pin'],
+    expectedArgs: '<text>',
+    permissionError: "I don't have the permission to manage messages",
+    minArgs: 1,
+    callback: (message, args, text) => {
+        // if (!message.guild.me.hasPermission("MANAGE_MESSAGES")) return message.channel.send("I don't have the permission to manage messages")
 
-        const str = args.join(' ');
+        // const str = args.join(' ');
         message.delete()
-        message.channel.send(str).then(msg => msg.pin())
-    }
+        message.channel.send(text).then(msg => msg.pin())
+    },
+    permissions: ['MANAGE_MESSAGES'],
+    requiredRoles: [],
 }
