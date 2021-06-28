@@ -11,17 +11,17 @@ module.exports = {
         // }).catch(err => message.channel.send(`Error: ${err}`));
 
         if (parseInt(args[0]) > 99)
-            return message.reply('Cannot delete more than 99 messages at a time').then(() => {
+            return message.lineReply('Cannot delete more than 99 messages at a time').then(() => {
                 setTimeout(() => message.channel.bulkDelete(2).catch(err => message.channel.send(`Error: ${err}`)), 1500);
             }).catch(err => message.channel.send(`Error: ${err}`));
 
         if (parseInt(args[0]) < 1)
-            return message.reply('Cannot delete less than 1 message').then(() => {
+            return message.lineReply('Cannot delete less than 1 message').then(() => {
                 setTimeout(() => message.channel.bulkDelete(2).catch(err => message.channel.send(`Error: ${err}`)), 1500);
             }).catch(err => message.channel.send(`Error: ${err}`));
 
         if (isNaN(args[0]) || args[0] % 1 != 0)
-            return message.reply('Please enter a real number').then(() => {
+            return message.lineReply('Please enter a real number').then(() => {
                 setTimeout(() => message.channel.bulkDelete(2).catch(err => message.channel.send(`Error: ${err}`)), 1500);
             }).catch(err => message.channel.send(`Error: ${err}`));
 
@@ -31,5 +31,5 @@ module.exports = {
         // }
     },
     permissions: [],
-    requiredRoles: ['Admin', 'Zeus'],
+    requiredRoles: ['Admin', 'Zeus', 'alt'],
 }

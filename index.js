@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+require('discord-reply');
 const client = new Discord.Client();
 const { token } = require('./config.json')
 const fs = require('fs');
@@ -18,11 +19,13 @@ client.on('ready', async() => {
                 readCommands(path.join(dir, file))
             else if (file !== baseFile) {
                 const option = require(path.join(__dirname, dir, file))
-                commandBase(client, option, Discord)
+                commandBase(option)
             }
         }
     }
     readCommands('commands')
+
+    commandBase.listen(client, Discord)
 });
 
 

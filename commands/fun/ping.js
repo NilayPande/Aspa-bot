@@ -1,9 +1,9 @@
 module.exports = {
-    commands: ['ping'],
+    commands: 'ping',
     minArgs: 0,
     maxArgs: 0,
-    callback: (message, args, text) => {
-        message.reply('Pong!')
+    callback: (message) => {
+        message.lineReply('Pong!')
     },
     permissions: [],
     requiredRoles: [],

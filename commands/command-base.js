@@ -42,16 +42,18 @@ const validatePermissions = (permissions) => {
     }
 }
 
-module.exports = (client, commandOptions, Discord) => {
+const allCommands = {}
+
+module.exports = (commandOptions) => {
     let {
         commands,
-        expectedArgs = '',
-        permissionError = 'You do not have permission to run this command.',
-        minArgs = 0,
-        maxArgs = null,
+        // expectedArgs = '',
+        // permissionError = 'You do not have permission to run this command.',
+        // minArgs = 0,
+        // maxArgs = null,
         permissions = [],
-        requiredRoles = [],
-        callback,
+        // requiredRoles = [],
+        // callback,
     } = commandOptions
 
     // Ensure the command and aliases are in an array
@@ -71,76 +73,109 @@ module.exports = (client, commandOptions, Discord) => {
         validatePermissions(permissions)
     }
 
+    for (const command of commands) {
+        allCommands[command] = {
+            ...commandOptions,
+            commands,
+            permissions
+        }
+    }
+}
+
+module.exports.listen = (client, Discord) => {
     // Listen for messages
     client.on('message', (message) => {
         const { member, content, guild } = message
 
-        for (const alias of commands) {
-            const command = `${prefix}${alias.toLowerCase()}`
+        // Split on any number of spaces
+        const arguments = content.split(/[ ]+/)
 
-            if (
-                content.toLowerCase().startsWith(`${command} `) ||
-                content.toLowerCase() === command
-            ) {
-                // A command has been ran
+        // Remove the command which is the first index
+        const name = arguments.shift().toLowerCase()
 
-                // Ensure the user has the required permissions
-                for (const permission of permissions) {
-                    if (!member.hasPermission(permission)) {
-                        if (permissionError === '')
-                            return
-                        else
-                            return message.reply(permissionError)
+        if (name.startsWith(prefix)) {
+            const command = allCommands[name.replace(prefix, '')]
+            if (!command)
+                return
 
-                    }
-                }
+            const {
+                permissions,
+                permissionError = 'You do not have permission to run this command.',
+                requiredRoles = [],
+                minArgs = 0,
+                maxArgs = null,
+                expectedArgs,
+                callback,
+            } = command
 
-                // Ensure the user has the required roles
-                let flag = false
-                for (const requiredRole of requiredRoles) {
-                    const role = guild.roles.cache.find(
-                        (role) => role.name === requiredRole
-                    )
+            // A command has been ran
 
-                    if (member.roles.cache.has(role.id)) {
-                        flag = true
-                        break
-                    }
-
-                    if (!role) {
-                        // message.reply(
-                        //     `You must have the "${requiredRole}" role to use this command.`
-                        // )
+            // Ensure the user has the required permissions
+            for (const permission of permissions) {
+                if (!member.hasPermission(permission)) {
+                    if (permissionError === '')
                         return
-                    }
+                    else
+                        return message.lineReply(permissionError)
+
                 }
-                if (requiredRoles.length === 0)
+            }
+
+            // Ensure the user has the required roles
+            let flag = false
+            for (const requiredRole of requiredRoles) {
+                const role = guild.roles.cache.find(
+                    (role) => role.name === requiredRole
+                )
+
+                if (member.roles.cache.has(role.id)) {
                     flag = true
-                if (!flag)
-                    return
-
-                // Split on any number of spaces
-                const arguments = content.split(/[ ]+/)
-
-                // Remove the command which is the first index
-                arguments.shift()
-
-                // Ensure we have the correct number of arguments
-                if (
-                    arguments.length < minArgs ||
-                    (maxArgs !== null && arguments.length > maxArgs)
-                ) {
-                    message.reply(
-                        `Incorrect syntax! Use ${prefix}${alias} ${expectedArgs}`
-                    )
-                    return
+                    break
                 }
 
-                // Handle the custom command code
-                callback(message, arguments, arguments.join(' '), Discord)
+                if (!role) {
+                    // message.lineReplyNoMention(
+                    //     `You must have the "${requiredRole}" role to use this command.`
+                    // )
+                    return
+                }
+            }
+            if (requiredRoles.length === 0)
+                flag = true
+            if (!flag)
+                return
 
+
+            // Ensure we have the correct number of arguments
+            if (
+                arguments.length < minArgs ||
+                (maxArgs !== null && arguments.length > maxArgs)
+            ) {
+                if (expectedArgs === undefined)
+                    message.lineReply(
+                        `Incorrect syntax! Use ${name}`
+                    )
+                else
+                    message.lineReply(
+                        `Incorrect syntax! Use ${name} ${expectedArgs}`
+                    )
                 return
             }
+
+            // Handle the custom command code
+            callback(message, arguments, arguments.join(' '), Discord)
+                // return
         }
+
+        // for (const alias of commands) {
+        //     const command = `${prefix}${alias.toLowerCase()}`
+
+        //     if (
+        //         content.toLowerCase().startsWith(`${command} `) ||
+        //         content.toLowerCase() === command
+        //     ) {
+
+        //     }
+        // }
     })
 }
