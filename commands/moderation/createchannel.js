@@ -5,7 +5,7 @@ module.exports = {
     callback: (message, args, text, Discord) => {
         const arr = [
             "**Enter channel name**",
-            "**Enter category name or it's id**",
+            "**Enter category name or id**",
             "**Is it a text or a voice channel? (text/voice)**",
             "**Enter a description for the channel**",
             "**Do you want the channel to be NSFW? (Y/N)**"
@@ -61,11 +61,7 @@ module.exports = {
                                     let category = message.guild.channels.cache.find(c => c.name.toLowerCase() == input.toLowerCase() && c.type == "category")
 
                                     if (!category) {
-                                        message.channel.send(`Not a valid category name. You have ${tries--} tries left`).then(t => {
-                                            setTimeout(() => {
-                                                t.delete()
-                                            }, 1000 * 2.5);
-                                        })
+                                        message.channel.send(`Not a valid category name. You have ${tries--} tries left`).then(t => { t.delete({ timeout: 2500 }) })
                                         run()
                                     } else {
                                         input = category.id
@@ -74,11 +70,7 @@ module.exports = {
                                 } else {
                                     if (message.guild.channels.cache.get(input) === undefined) {
 
-                                        message.channel.send(`Not a valid category id. You have ${tries--} tries left`).then(t => {
-                                            setTimeout(() => {
-                                                t.delete()
-                                            }, 1000 * 2.5);
-                                        })
+                                        message.channel.send(`Not a valid category id. You have ${tries--} tries left`).then(t => { t.delete({ timeout: 2500 }) })
                                         run()
                                     } else
                                         next()
@@ -93,11 +85,7 @@ module.exports = {
                                     a.push('voice')
                                     createChannel()
                                 } else {
-                                    message.channel.send(`Please enter either text or voice. You have ${tries--} tries left`).then(t => {
-                                        setTimeout(() => {
-                                            t.delete()
-                                        }, 1000 * 2.5)
-                                    })
+                                    message.channel.send(`Please enter either text or voice. You have ${tries--} tries left`).then(t => { t.delete({ timeout: 2500 }) })
                                     run()
                                 }
                                 break
@@ -115,18 +103,14 @@ module.exports = {
                                         a.push(false)
                                     createChannel()
                                 } else {
-                                    message.channel.send(`Please enter either yes or no. You have ${tries--} tries left`).then(t => {
-                                        setTimeout(() => {
-                                            t.delete()
-                                        }, 1000 * 2.5);
-                                    })
+                                    message.channel.send(`Please enter either yes or no. You have ${tries--} tries left`).then(t => { t.delete({ timeout: 2500 }) })
                                     run()
                                 }
                                 break
                         }
                     })
             } catch (err) {
-                console.log(err)
+                // console.log(err)
                 if (flag) {
                     const noTimeLeftEmbed = new Discord.MessageEmbed()
                         .setColor('ff2934')
