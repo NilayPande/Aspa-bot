@@ -1,9 +1,13 @@
 const Discord = require('discord.js');
 require('discord-reply');
 const client = new Discord.Client();
-const { token } = require('./config.json')
+const { token, mongoUri } = require('./config.json')
 const fs = require('fs');
 const path = require('path');
+const mongoose = require('mongoose')
+
+mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Connected to database')).catch(err => console.log(err))
 
 client.on('ready', async() => {
     console.log('Bot is now online')
